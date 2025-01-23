@@ -1,0 +1,15 @@
+Steps Taken to Fix the Problem:
+
+1. Reproduced the issue by executing the customer’s provided code and encountered the same `NoneType` error.
+2. Reviewed the stack trace and identified that the issue occurred when attempting to access the `transcript.utterances` property, indicating a problem with the `transcript` object.
+3. Debugged the `transcript` object by adding a print statement, revealing an error message indicating an invalid `audio_url`.
+4. Reviewed AssemblyAI API documentation to confirm the expected input format for the `audio_url` parameter.
+5. Identified the root cause that the provided URL pointed to a podcast webpage rather than a direct link to an audio file.
+6. Updated the `audio_url` in the code with a direct link to the audio file, then re-ran the script to confirm the issue was resolved and that speaker labels and transcript were successfully generated.
+
+Lessons learned:
+
+1. Validate the inputs and ensure that any URLs passed to the API point directly to audio files, as indirect links (e.g., podcast webpages) are not supported.
+2. Pay close attention to the error messages as they often provide key insights for debugging.
+3. Review the API documentation to help clarify the expected input format and API requirements.
+4. Add print statements and check outputs at key steps to diagnose and resolve issues.
