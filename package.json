@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "assemblyai": "^4.8.0"
-  }
+    "assemblyai": "^4.8.0",
+    "dotenv": "^16.4.7"
+  },
+  "type": "module"
 }
