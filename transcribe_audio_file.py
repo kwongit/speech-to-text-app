@@ -9,13 +9,7 @@ aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
 transcriber = aai.Transcriber()
 transcriber
 
-audio_file = "/Users/kevin/Documents/App Academy/Job Search/Interview Recordings/Writer/writer_qaae_recruiter.MOV"
-
-# audio_file = "/Users/kevin/Documents/App Academy/Job Search/Interview Recordings/Bold Metrics/boldmetrics_sdet_eng_dir.MOV"
-
-# audio_file = "/Users/kevin/Documents/App Academy/Job Search/Interview Recordings/Hungryroot/hungryroot_aaron.MOV"
-
-# audio_file = "/Users/kevin/Desktop/New Recording.m4a"
+audio_file = "/Users/kevin/Desktop/New Recording.m4a"
 
 print(f"Processing file: {audio_file}")
 config = aai.TranscriptionConfig(speaker_labels=True, sentiment_analysis=True)
