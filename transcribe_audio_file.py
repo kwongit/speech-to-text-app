@@ -2,6 +2,8 @@ import os
 import assemblyai as aai
 from dotenv import load_dotenv
 from collections import Counter
+from tqdm import tqdm
+import time
 
 load_dotenv()
 
@@ -15,7 +17,15 @@ print(f"\n--- Processing file: {audio_file} ---")
 
 config = aai.TranscriptionConfig(speaker_labels=True, sentiment_analysis=True)
 
+# Start transcription
 transcript = transcriber.transcribe(audio_file, config)
+
+# Progress bar while waiting for transcription to complete
+with tqdm(total=100, desc="Starting transcription", unit="%") as pbar:
+    while transcript.status not in [aai.TranscriptStatus.completed, aai.TranscriptStatus.error]:
+        time.sleep(1)  # Check status every second
+        transcript = transcriber.get_transcript(transcript.id)
+        pbar.update(10)  # Update progress bar (adjust as needed)
 
 if transcript.status == aai.TranscriptStatus.error:
     print(f"Transcription failed: {transcript.error}")
