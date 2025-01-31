@@ -6,20 +6,31 @@ from collections import Counter
 load_dotenv()
 
 aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
+
 transcriber = aai.Transcriber()
-transcriber
 
 audio_file = "/Users/kevin/Desktop/New Recording.m4a"
 
-print(f"Processing file: {audio_file}")
+print(f"\n--- Processing file: {audio_file} ---")
+
 config = aai.TranscriptionConfig(speaker_labels=True, sentiment_analysis=True)
+
 transcript = transcriber.transcribe(audio_file, config)
 
 if transcript.status == aai.TranscriptStatus.error:
     print(f"Transcription failed: {transcript.error}")
     exit(1)
 
-print(f"Transcription completed for: {audio_file}")
+print("Transcription completed.")
+
+# TODO: Add LLM to the transcript
+# prompt = "Provide a brief summary of the transcript."
+
+# result = transcript.lemur.task(
+#     prompt, final_model=aai.LemurModel.claude3_5_sonnet
+# )
+
+# print(f"Summary of transcript: {result.response}")
 
 def write_transcript_to_file(transcript, filename=f"{audio_file}_utterances.txt"):
     """
