@@ -1,6 +1,6 @@
 Features/improvements:
 
+- Extract JS out of HTML...use Next.JS
 - Add progress bar
 - Copy/save/download feature
 - Add LLM to the transcript
-- Use Next.JS
