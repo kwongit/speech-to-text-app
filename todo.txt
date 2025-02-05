@@ -1,0 +1,6 @@
+Features/improvements:
+
+- Add progress bar
+- Copy/save/download feature
+- Add LLM to the transcript
+- Use Next.JS
