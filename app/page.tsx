@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ClipLoader } from "react-spinners";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -68,7 +69,7 @@ export default function Home() {
 
       {isLoading && (
         <div className="mt-5 text-center">
-          <div className="spinner"></div>
+          <ClipLoader color="#09f" size={40} />
           <p>Transcribing your audio... This may take a moment.</p>
         </div>
       )}
@@ -79,24 +80,6 @@ export default function Home() {
           <pre className="bg-gray-100 p-4 rounded mt-2">{transcription}</pre>
         </div>
       )}
-
-      <style jsx>{`
-        .spinner {
-          border: 4px solid rgba(0, 0, 0, 0.1);
-          border-left-color: #09f;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-          margin: 0 auto;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }
