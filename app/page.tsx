@@ -47,21 +47,56 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Upload an Audio File for Transcription</h1>
+    <div className="p-5">
+      <h1 className="text-2xl font-bold mb-4">Upload an Audio File for Transcription</h1>
       <form onSubmit={handleSubmit}>
-        <input type="file" accept="audio/*" onChange={handleFileChange} required />
-        <button type="submit" disabled={isLoading}>
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={handleFileChange}
+          required
+          className="cursor-pointer"
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+        >
           {isLoading ? "Transcribing..." : "Transcribe"}
         </button>
       </form>
 
-      {transcription && (
-        <div>
-          <h2>Transcription:</h2>
-          <pre>{transcription}</pre>
+      {isLoading && (
+        <div className="mt-5 text-center">
+          <div className="spinner"></div>
+          <p>Transcribing your audio... This may take a moment.</p>
         </div>
       )}
+
+      {transcription && (
+        <div className="mt-5">
+          <h2 className="text-xl font-bold">Transcription:</h2>
+          <pre className="bg-gray-100 p-4 rounded mt-2">{transcription}</pre>
+        </div>
+      )}
+
+      <style jsx>{`
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          border-left-color: #09f;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
