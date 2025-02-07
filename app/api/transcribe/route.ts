@@ -30,7 +30,10 @@ export async function POST(request: Request) {
         authorization: process.env.NEXT_PUBLIC_ASSEMBLYAI_API_KEY!,
         "content-type": "application/json",
       },
-      body: JSON.stringify({ audio_url: audioUrl }),
+      body: JSON.stringify({
+        audio_url: audioUrl,
+        speaker_labels: true, // Enable speaker labels
+      }),
     });
     if (!transcriptResponse.ok) {
       throw new Error("Failed to start transcription");
@@ -51,7 +54,10 @@ export async function POST(request: Request) {
       const data = await statusResponse.json();
       status = data.status;
       if (status === "completed") {
-        return NextResponse.json({ transcription: data.text });
+        return NextResponse.json({
+          transcription: data.text,
+          utterances: data.utterances,
+        });
       } else if (status === "error") {
         throw new Error("Transcription failed");
       }

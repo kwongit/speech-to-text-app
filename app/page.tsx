@@ -6,6 +6,7 @@ import { ClipLoader } from "react-spinners";
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [transcription, setTranscription] = useState("");
+  const [utterances, setUtterances] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +36,14 @@ export default function Home() {
 
       const result = await response.json();
       if (result.transcription) {
+        setTranscription(result.transcription);
+      } else {
+        throw new Error(result.error || "Transcription failed");
+      }
+      if (result.utterances) {
+        setUtterances(result.utterances);
+        setTranscription(""); // Clear the plain text transcription
+      } else if (result.transcription) {
         setTranscription(result.transcription);
       } else {
         throw new Error(result.error || "Transcription failed");
@@ -74,12 +83,26 @@ export default function Home() {
         </div>
       )}
 
-      {transcription && (
+      {utterances.length > 0 ? (
         <div className="mt-5">
-          <h2 className="text-xl font-bold">Transcription:</h2>
-          <pre className="bg-gray-100 p-4 rounded mt-2">{transcription}</pre>
+          <h2 className="text-xl font-bold">Speaker-Separated Transcription:</h2>
+          <div className="bg-gray-100 p-4 rounded mt-2">
+            {utterances.map((u, index) => (
+              <p key={index}>
+                <strong>Speaker {u.speaker}: </strong> {u.text}
+              </p>
+            ))}
+          </div>
         </div>
+      ) : (
+        transcription && (
+          <div className="mt-5">
+            <h2 className="text-xl font-bold">Transcription:</h2>
+            <pre className="bg-gray-100 p-4 rounded mt-2">{transcription}</pre>
+          </div>
+        )
       )}
+
     </div>
   );
 }
