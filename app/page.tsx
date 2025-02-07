@@ -88,9 +88,12 @@ export default function Home() {
           <h2 className="text-xl font-bold">Speaker-Separated Transcription:</h2>
           <div className="bg-gray-100 p-4 rounded mt-2">
             {utterances.map((u, index) => (
-              <p key={index}>
-                <strong>Speaker {u.speaker}: </strong> {u.text}
-              </p>
+              <div key={index}>
+                <p>
+                  <strong>Speaker {u.speaker}: </strong> {u.text}
+                </p>
+                <br />
+              </div>
             ))}
           </div>
         </div>
