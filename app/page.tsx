@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
-import axios from "axios";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -10,8 +9,6 @@ export default function Home() {
   const [utterances, setUtterances] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [summary, setSummary] = useState("");
-  const [isSummarizing, setIsSummarizing] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -82,29 +79,6 @@ export default function Home() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
-
-  // Summarize transcription using Claude API
-  const handleSummarize = async () => {
-    const textToSummarize = utterances.length > 0
-      ? utterances.map(u => `Speaker ${u.speaker}: ${u.text}`).join("\n\n")
-      : transcription;
-
-    if (!textToSummarize) {
-      alert("No transcription available to summarize.");
-      return;
-    }
-
-    setIsSummarizing(true);
-    try {
-      const response = await axios.post("/api/summarize", { transcription: textToSummarize });
-      setSummary(response.data.summary);
-    } catch (error) {
-      console.error("Error summarizing:", error);
-      alert("Failed to generate summary.");
-    } finally {
-      setIsSummarizing(false);
-    }
   };
 
   return (
@@ -181,22 +155,6 @@ export default function Home() {
           </button>
         </div>
       )}
-
-      <button
-        onClick={handleSummarize}
-        disabled={isSummarizing}
-        className="mt-3 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-      >
-        {isSummarizing ? "Summarizing..." : "Summarize"}
-      </button>
-
-      {summary && (
-        <div className="mt-5 bg-gray-100 p-4 rounded">
-          <h3>Summary:</h3>
-          <p>{summary}</p>
-        </div>
-      )}
-
 
     </div>
   );
