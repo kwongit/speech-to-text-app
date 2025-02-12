@@ -24,14 +24,7 @@ export async function POST(req: Request) {
       }
     );
 
-    console.log("Claude API Response:", JSON.stringify(response.data, null, 2));
-
-
-    // return NextResponse.json({ summary: response.data.content[0].text });
-
-    const summaryText = response.data?.content?.[0]?.text || "No summary generated.";
-    return NextResponse.json({ summary: summaryText });
-
+    return NextResponse.json({ summary: response.data.content[0].text });
   } catch (error: any) {
     console.error("Error summarizing:", error.response?.data || error.message);
     return NextResponse.json({ error: "Failed to generate summary." }, { status: 500 });

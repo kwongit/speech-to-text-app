@@ -86,14 +86,18 @@ export default function Home() {
 
   // Summarize transcription using Claude API
   const handleSummarize = async () => {
-    if (!transcription) {
+    const textToSummarize = utterances.length > 0
+      ? utterances.map(u => `Speaker ${u.speaker}: ${u.text}`).join("\n\n")
+      : transcription;
+
+    if (!textToSummarize) {
       alert("No transcription available to summarize.");
       return;
     }
 
     setIsSummarizing(true);
     try {
-      const response = await axios.post("/api/summarize", { transcription });
+      const response = await axios.post("/api/summarize", { transcription: textToSummarize });
       setSummary(response.data.summary);
     } catch (error) {
       console.error("Error summarizing:", error);
