@@ -4,6 +4,9 @@ test('App loads and file input is present', async ({ page }) => {
   // Navigate to the home page
   await page.goto('/');
 
+  // Verify the page URL
+  await expect(page).toHaveURL('/');
+
   // Verify the page title
   await expect(page).toHaveTitle('Transcribe.io');
 
@@ -18,4 +21,7 @@ test('App loads and file input is present', async ({ page }) => {
   const transcribeButton = page.getByRole('button', { name: 'Transcribe' });
   await expect(fileInput).toBeVisible();
   await expect(transcribeButton).toBeVisible();
+
+  // Verify the file input accepts audio files
+  await expect(fileInput).toHaveAttribute('accept', 'audio/*');
 });
