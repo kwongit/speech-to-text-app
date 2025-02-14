@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ClipLoader } from "react-spinners";
 
 export default function Home() {
@@ -9,6 +9,7 @@ export default function Home() {
   const [utterances, setUtterances] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -44,6 +45,11 @@ export default function Home() {
       } else {
         throw new Error(result.error || "Transcription failed");
       }
+
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error(error);
       alert("An error occurred during transcription.");
@@ -52,33 +58,57 @@ export default function Home() {
     }
   };
 
-  // Copy to Clipboard Function
-  const handleCopy = () => {
+  const handleCopy = async () => {
     const textToCopy = utterances.length > 0
       ? utterances.map(u => `Speaker ${u.speaker}: ${u.text}`).join("\n\n")
       : transcription;
 
-    navigator.clipboard.writeText(textToCopy).then(() => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Hide message after 2 seconds
-    });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy text:", error);
+      alert("Failed to copy text to clipboard.");
+    }
   };
 
-  // Download as Text File Function
   const handleDownload = () => {
     const textToDownload = utterances.length > 0
       ? utterances.map(u => `Speaker ${u.speaker}: ${u.text}`).join("\n\n")
       : transcription;
 
-    const blob = new Blob([textToDownload], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "transcription.txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      const blob = new Blob([textToDownload], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      // Dynamically name the file based on the uploaded audio file's name
+      if (file) {
+        const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove the file extension
+        a.download = `${fileName}_utterances.txt`; // Append "_utterances.txt"
+      } else {
+        a.download = "utterances.txt"; // Fallback name
+      }
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download file:", error);
+      alert("Failed to download transcription.");
+    }
+  };
+
+  const handleClear = () => {
+    setFile(null);
+    setTranscription("");
+    setUtterances([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -91,6 +121,8 @@ export default function Home() {
           onChange={handleFileChange}
           required
           className="cursor-pointer"
+          aria-label="Upload audio file"
+          ref={fileInputRef}
         />
         <button
           type="submit"
@@ -131,7 +163,7 @@ export default function Home() {
         )
       )}
 
-      {/* Show Copy & Download Buttons only if there is a transcription */}
+      {/* Show Copy, Download, and Clear Buttons only if there is a transcription */}
       {(transcription || utterances.length > 0) && (
         <div className="mt-3 flex gap-2">
           <div className="relative inline-block">
@@ -153,9 +185,14 @@ export default function Home() {
           >
             Download
           </button>
+          <button
+            onClick={handleClear}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Clear
+          </button>
         </div>
       )}
-
     </div>
   );
 }
