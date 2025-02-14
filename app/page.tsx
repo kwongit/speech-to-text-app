@@ -142,7 +142,7 @@ export default function Home() {
 
       {utterances.length > 0 ? (
         <div className="mt-5">
-          <h2 className="text-xl font-bold">Speaker-Separated Transcription:</h2>
+          <h2 className="text-xl font-bold">Transcription:</h2>
           <div className="bg-gray-100 p-4 rounded mt-2">
             {utterances.map((u, index) => (
               <div key={index}>
