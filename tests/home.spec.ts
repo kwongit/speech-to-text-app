@@ -36,7 +36,9 @@ test('Upload audio file and verify transcription', async ({ page }) => {
   const fileInput = page.getByLabel('Upload audio file');
   await fileInput.setInputFiles(filePath);
 
+  // TODO: Figure out how to verify the file input value
   // Verify path of uploaded file
+  await expect(fileInput).toContainText('./data/test-recording.m4a');
 
   // Verify the button initially says "Transcribe"
   const transcribeButton = page.getByRole('button', { name: 'Transcribe' });
@@ -50,13 +52,15 @@ test('Upload audio file and verify transcription', async ({ page }) => {
   await expect(transcribingButton).toHaveText("Transcribing...");
 
   // Verify the loading spinner and message are visible
+  const loadingSpinner = page.locator('.mt-5.text-center');
+  await expect(loadingSpinner).toBeVisible();
+
   const transcriptionInProgressText = 'Transcribing your audio... This may take a moment.';
-  await expect(page.locator('.mt-5.text-center')).toBeVisible();
   await expect(page.getByText(transcriptionInProgressText)).toBeVisible();
 
-  // TODO: figure out how to wait for the transcription to complete
+  // TODO: Figure out if this is the best way to wait for the transcription to complete
   // Wait for the transcription to complete
-  await page.waitForSelector('.bg-gray-100');
+  await page.locator('.bg-gray-100').waitFor();
 
   // Verify the button text changes back to "Transcribe"
   await expect(transcribeButton).toHaveText('Transcribe');
