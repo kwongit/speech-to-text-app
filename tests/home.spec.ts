@@ -158,6 +158,8 @@ test('Download transcription as text file', async ({ page }) => {
   expect(download.suggestedFilename()).toBe(fileName);
 });
 
-// TODO: additional test scenarios:
+// TODO:
+// refactor
+// additional test scenarios:
 // Test the "Clear" button functionality.
 // Test error handling (e.g., uploading an invalid file).
