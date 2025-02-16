@@ -6,7 +6,12 @@ import { ClipLoader } from "react-spinners";
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [transcription, setTranscription] = useState("");
-  const [utterances, setUtterances] = useState<any[]>([]);
+  interface Utterance {
+    speaker: number;
+    text: string;
+  }
+
+  const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

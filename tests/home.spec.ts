@@ -90,10 +90,10 @@ test('Copy transcription to clipboard', async ({ page }) => {
   // Mock the clipboard
   await page.evaluate(() => {
     navigator.clipboard.writeText = async (text: string) => {
-      (window as any).__mockClipboard__ = text;
+      (window as { __mockClipboard__?: string }).__mockClipboard__ = text;
     };
     navigator.clipboard.readText = async () => {
-      return (window as any).__mockClipboard__ || '';
+      return (window as { __mockClipboard__?: string }).__mockClipboard__ || '';
     };
   });
 
