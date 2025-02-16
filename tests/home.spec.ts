@@ -34,10 +34,6 @@ test('Upload audio file and verify transcription', async ({ page }) => {
   const fileInput = page.getByLabel('Upload audio file');
   await fileInput.setInputFiles(filePath);
 
-  // TODO: Figure out how to verify the file input value
-  // Verify path of uploaded file
-  // await expect(fileInput).toContainText('./data/test-recording.m4a');
-
   // Verify the button initially says "Transcribe"
   const transcribeButton = page.getByRole('button', { name: 'Transcribe' });
   await expect(transcribeButton).toHaveText('Transcribe');
@@ -56,11 +52,112 @@ test('Upload audio file and verify transcription', async ({ page }) => {
   const transcriptionInProgressText = 'Transcribing your audio... This may take a moment.';
   await expect(page.getByText(transcriptionInProgressText)).toBeVisible();
 
-  // TODO: Figure out if this is the best way to wait for the transcription to complete
-  // Wait for the transcription heading to appear
-  const transcriptionHeading = page.getByRole('heading', { name: 'Transcription:' });
-  await expect(transcriptionHeading).toBeVisible({ timeout: 45000 }); // 45 seconds
+  // Wait for the API response
+  const responsePromise = page.waitForResponse(response =>
+    response.url().includes('/api/transcribe') && response.status() === 200
+  );
+  await responsePromise;
 
   // Verify the button text changes back to "Transcribe"
   await expect(transcribeButton).toHaveText('Transcribe');
+
+  // Verify the transcription heading is visible
+  const transcriptionHeading = page.getByRole('heading', { name: 'Transcription:' });
+  await expect(transcriptionHeading).toBeVisible();
+
+  // Verify the transcription text is visible
+  const transcriptionText = page.locator('.bg-gray-100');
+  await expect(transcriptionText).toBeVisible();
+  await expect(transcriptionText).not.toBeEmpty();
+
+  const transcriptionTextContent = 'Speaker A: Hi. This is a test.';
+  await expect(transcriptionText).toContainText(transcriptionTextContent);
+
+  // Verify copy to clipboard button is present
+  await expect(page.getByRole('button', { name: 'Copy' })).toBeVisible();
+
+  // Verify download button is present
+  await expect(page.getByRole('button', { name: 'Download' })).toBeVisible();
+
+  // Verify clear button is present
+  await expect(page.getByRole('button', { name: 'Clear' })).toBeVisible();
 });
+
+test('Copy transcription to clipboard', async ({ page }) => {
+  // Navigate to the home page
+  await page.goto('/');
+
+  // Mock the clipboard
+  await page.evaluate(() => {
+    navigator.clipboard.writeText = async (text: string) => {
+      (window as any).__mockClipboard__ = text;
+    };
+    navigator.clipboard.readText = async () => {
+      return (window as any).__mockClipboard__ || '';
+    };
+  });
+
+  // Upload the test audio file
+  const filePath = path.resolve(__dirname, './data/test-recording.m4a');
+  const fileInput = page.getByLabel('Upload audio file');
+  await fileInput.setInputFiles(filePath);
+
+  // Click the transcribe button
+  const transcribeButton = page.getByRole('button', { name: 'Transcribe' });
+  await transcribeButton.click();
+
+  // Wait for the API response
+  const responsePromise = page.waitForResponse(response =>
+    response.url().includes('/api/transcribe') && response.status() === 200
+  );
+  await responsePromise;
+
+  // Click the copy button
+  const copyButton = page.getByRole('button', { name: 'Copy' });
+  await copyButton.click();
+
+  // Verify the "Copied!" message appears
+  const copiedMessage = page.getByText('Copied!');
+  await expect(copiedMessage).toBeVisible();
+
+  // Verify the clipboard contains the transcription text
+  const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+  const transcriptionText = await page.locator('.bg-gray-100').innerText();
+  const normalizedClipboardText = clipboardText.trim().replace(/\s+/g, ' ');
+  const normalizedTranscriptionText = transcriptionText.trim().replace(/\s+/g, ' ');
+  expect(normalizedClipboardText).toBe(normalizedTranscriptionText);
+});
+
+test('Download transcription as text file', async ({ page }) => {
+  // Navigate to the home page
+  await page.goto('/');
+
+  // Upload the test audio file
+  const filePath = path.resolve(__dirname, './data/test-recording.m4a');
+  const fileInput = page.getByLabel('Upload audio file');
+  await fileInput.setInputFiles(filePath);
+
+  // Click the transcribe button
+  const transcribeButton = page.getByRole('button', { name: 'Transcribe' });
+  await transcribeButton.click();
+
+  // Wait for the API response
+  const responsePromise = page.waitForResponse(response =>
+    response.url().includes('/api/transcribe') && response.status() === 200
+  );
+  await responsePromise;
+
+  // Click the download button
+  const downloadPromise = page.waitForEvent('download'); // Wait for the download to start
+  const downloadButton = page.getByRole('button', { name: 'Download' });
+  await downloadButton.click();
+  const download = await downloadPromise;
+
+  // Verify the downloaded file name
+  const fileName = 'test-recording_utterances.txt';
+  expect(download.suggestedFilename()).toBe(fileName);
+});
+
+// TODO: additional test scenarios:
+// Test the "Clear" button functionality.
+// Test error handling (e.g., uploading an invalid file).
