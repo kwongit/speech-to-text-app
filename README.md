@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Audio Transcription App
+
+This is a Next.js application that allows users to upload audio files and transcribe them using the AssemblyAI API. The app supports speaker diarization, which identifies different speakers in the audio, and provides options to copy or download the transcription.
+
+## Live Demo
+
+Check out the live demo of the app here: [https://transcribe-io.vercel.app/](https://transcribe-io.vercel.app/)
+
+## Features
+
+- **Upload Audio Files**: Upload audio files in supported formats (e.g., MP3, WAV, FLAC).
+- **Transcription with Speaker Labels**: Automatically identifies and labels different speakers in the transcription.
+- **Copy Transcription**: Copy the transcription to the clipboard with a single click.
+- **Download Transcription**: Download the transcription as a `.txt` file.
+- **Clear Results**: Clear the uploaded file and transcription results.
+
+## Technologies Used
+
+- **Next.js**: A React framework for building server-rendered applications.
+- **AssemblyAI API**: Used for audio transcription and speaker diarization.
+- **React Spinners**: Provides a loading spinner for better user experience.
+- **Tailwind CSS**: Used for styling the application.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v16 or later)
+- An AssemblyAI API key (get it from [AssemblyAI Dashboard](https://app.assemblyai.com/))
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/your-username/audio-transcription-app.git
+   cd audio-transcription-app
+   ```
 
-## Learn More
+2. **Install dependencies**:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Set up environment variables**:
+   Create a `.env` file in the root directory and add your AssemblyAI API key:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```env
+   NEXT_PUBLIC_ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
+   ```
 
-## Deploy on Vercel
+4. **Run the development server**:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Open the app**:
+   Visit `http://localhost:3000` in your browser to use the app.
+
+## Usage
+
+1. **Upload an Audio File**:
+
+   - Click the "Choose File" button to select an audio file from your device.
+   - Supported formats: MP3, WAV, FLAC, etc.
+
+2. **Transcribe the Audio**:
+
+   - Click the "Transcribe" button to start the transcription process.
+   - The app will display a loading spinner while processing the audio.
+
+3. **View the Transcription**:
+
+   - Once the transcription is complete, the results will be displayed on the page.
+   - If speaker diarization is enabled, the transcription will include speaker labels (e.g., "Speaker 1", "Speaker 2").
+
+4. **Copy or Download the Transcription**:
+
+   - Use the "Copy" button to copy the transcription to your clipboard.
+   - Use the "Download" button to download the transcription as a `.txt` file.
+
+5. **Clear the Results**:
+   - Use the "Clear" button to reset the app and upload a new file.
+
+## Code Overview
+
+### `app/page.tsx`
+
+This is the main page of the application. It includes:
+
+- A file upload form.
+- Logic for handling file uploads and transcription requests.
+- Display of transcription results with speaker labels.
+- Buttons for copying, downloading, and clearing the transcription.
+
+### `app/api/transcribe/route.ts`
+
+This API route handles the transcription process. It:
+
+- Uploads the audio file to AssemblyAI.
+- Submits a transcription request with speaker diarization enabled.
+- Polls the AssemblyAI API for the transcription status.
+- Returns the transcription results to the frontend.
+
+## Deployment
+
+To deploy this application, you can use platforms like:
+
+- **Vercel**: The easiest way to deploy a Next.js app.
+- **Netlify**: Another great option for deploying static sites and serverless functions.
+- **AWS Amplify**: For deploying full-stack applications.
