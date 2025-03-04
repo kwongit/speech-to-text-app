@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 
+// TODO: 413 payload too large
+// Vercel Payload Size Limit
+// Vercel has a default payload size limit of 4.5 MB for Serverless Functions (API routes)
+// Solution?: Stream the File Directly to AssemblyAI
+
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get("file") as File;
@@ -65,6 +70,6 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "An error occurred during transcription" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred during transcription123" }, { status: 500 });
   }
 }
