@@ -34,12 +34,27 @@ export default function Home() {
     setUtterances([]);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
+      // Step 1: Upload the file directly to AssemblyAI
+      const uploadResponse = await fetch("https://api.assemblyai.com/v2/upload", {
+        method: "POST",
+        headers: {
+          authorization: process.env.NEXT_PUBLIC_ASSEMBLYAI_API_KEY!,
+          "content-type": file.type,
+        },
+        body: file,
+      });
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload file");
+      }
+      const { upload_url: audioUrl } = await uploadResponse.json();
+      
+      // Step 2: Send the upload_url to your Next.js API route for transcription
       const response = await fetch("/api/transcribe", {
         method: "POST",
-        body: formData,
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ audioUrl }),
       });
 
       const result = await response.json();

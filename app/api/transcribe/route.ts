@@ -14,20 +14,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Step 1: Upload the file to AssemblyAI
-    const uploadResponse = await fetch("https://api.assemblyai.com/v2/upload", {
-      method: "POST",
-      headers: {
-        authorization: process.env.NEXT_PUBLIC_ASSEMBLYAI_API_KEY!,
-        "content-type": file.type,
-      },
-      body: file,
-    });
-    if (!uploadResponse.ok) {
-      throw new Error("Failed to upload file");
-    }
-    const { upload_url: audioUrl } = await uploadResponse.json();
-
     // Step 2: Submit transcription request
     const transcriptResponse = await fetch("https://api.assemblyai.com/v2/transcript", {
       method: "POST",
