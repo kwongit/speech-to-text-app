@@ -6,15 +6,18 @@ import { NextResponse } from "next/server";
 // Solution?: Stream the File Directly to AssemblyAI
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
-  const file = formData.get("file") as File;
+  // Parse the request body to get the audioUrl
+  const { audioUrl } = await request.json();
 
-  if (!file) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  if (!audioUrl) {
+    return NextResponse.json(
+      { error: "No audio URL provided" },
+      { status: 400 }
+    );
   }
 
   try {
-    // Step 2: Submit transcription request
+    // Step 1: Submit transcription request to AssemblyAI
     const transcriptResponse = await fetch("https://api.assemblyai.com/v2/transcript", {
       method: "POST",
       headers: {
@@ -26,12 +29,14 @@ export async function POST(request: Request) {
         speaker_labels: true, // Enable speaker labels
       }),
     });
+
     if (!transcriptResponse.ok) {
       throw new Error("Failed to start transcription");
     }
+
     const { id: transcriptId } = await transcriptResponse.json();
 
-    // Step 3: Poll for transcription completion
+    // Step 2: Poll for transcription completion
     let status = "queued";
     while (status !== "completed" && status !== "error") {
       const statusResponse = await fetch(
@@ -42,9 +47,16 @@ export async function POST(request: Request) {
           },
         }
       );
+
+      if (!statusResponse.ok) {
+        throw new Error("Failed to get transcription status");
+      }
+
       const data = await statusResponse.json();
       status = data.status;
+
       if (status === "completed") {
+        // Return the transcription and utterances (if available)
         return NextResponse.json({
           transcription: data.text,
           utterances: data.utterances,
@@ -52,10 +64,12 @@ export async function POST(request: Request) {
       } else if (status === "error") {
         throw new Error("Transcription failed");
       }
-      await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
+      
+      // Wait 5 seconds before polling again
+      await new Promise((resolve) => setTimeout(resolve, 5000)); 
     }
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "An error occurred during transcription123" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred during transcription" }, { status: 500 });
   }
 }
