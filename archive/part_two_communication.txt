@@ -1,0 +1,24 @@
+Hi [Customer Name],
+
+Thank you for reaching out about the issue you're experiencing with the AssemblyAI API. I’m sorry for the trouble, but I’d be happy to help you resolve this as quickly as possible.
+
+After reviewing your code and reproducing the issue, I noticed that the URL you’re using points to a podcast episode page, not a direct link to the audio file. The AssemblyAI API requires a direct link to the actual audio file to process the transcription successfully.
+
+Here’s how you can fix the issue:
+
+1. Retrieve the direct audio file link: Visit the podcast episode page on Listen Notes. Look for a "Download" option or inspect the page’s audio player to find the direct link to the file.
+
+2. Update your code: Replace the current `audio_url` with the direct link to the audio file.
+
+Here’s an example of what your updated code might look like:
+```python
+audio_url = "https://d3ctxlq1ktw2nl.cloudfront.net/staging/2024-3-27/0473da78-47d1-a6a8-7d64-4e939fb23c7e.m4a"
+```
+
+Once you’ve made this change, your code should work as expected, and you’ll receive speaker labels for the transcription.
+
+If you have any trouble retrieving the audio file link or implementing this solution, please let me know — I’m happy to assist further. Thank you for your patience, and I appreciate your feedback — it helps us continue improving the documentation and user experience.
+
+Best regards,
+Kevin Won
+AssemblyAI API Support Engineer
